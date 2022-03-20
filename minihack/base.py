@@ -245,6 +245,14 @@ class MiniHack(NetHackStaircase):
             ):
                 self._minihack_obs_keys.append("glyphs_crop")
 
+        # filter Minihack's custom observation keys and amake sure
+        #  `screen_descriptions` are declared
+        observation_keys = tuple(
+            set(
+                (*observation_keys, "screen_descriptions"),
+            ) & set(nethack.OBSERVATION_DESC)
+        )
+
         self.reward_manager = reward_manager
         if self.reward_manager is not None:
             self.reward_manager.reset()
