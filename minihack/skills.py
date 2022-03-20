@@ -5,6 +5,14 @@ from minihack.base import MH_DEFAULT_OBS_KEYS
 from minihack.envs import register
 
 
+# make sure to include inv_* related fields
+DEFAULT_OBS_KEYS = (
+    *MH_DEFAULT_OBS_KEYS,
+    "inv_strs",
+    "inv_letters",
+)
+
+
 class MiniHackSkill(MiniHack):
     """The base class for MiniHack Skill Acquisition tasks.
 
@@ -27,29 +35,32 @@ class MiniHackSkill(MiniHack):
         self,
         *args,
         des_file,
-        **kwargs,
-    ):
         # Autopickup off by defautlt
-        kwargs["autopickup"] = kwargs.pop("autopickup", False)
+        autopickup: bool = False,
         # Allowing one-letter menu questions
-        kwargs["allow_all_yn_questions"] = kwargs.pop(
-            "allow_all_yn_questions", True
-        )
+        allow_all_yn_questions: bool = True,
         # Perform know steps
-        kwargs["allow_all_modes"] = kwargs.pop("allow_all_modes", False)
+        allow_all_modes: bool = False,
         # Play with Caveman character by default
-        kwargs["character"] = kwargs.pop("character", "cav-hum-new-mal")
+        character: str = "cav-hum-new-mal",
         # Default episode limit
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 250)
-
-        default_keys = MH_DEFAULT_OBS_KEYS + [
-            "inv_strs",
-            "inv_letters",
-        ]
-        kwargs["observation_keys"] = kwargs.pop(
-            "observation_keys", default_keys
+        max_episode_steps: int = 250,
+        # observations with inventory data
+        observation_keys: tuple = DEFAULT_OBS_KEYS,
+        # remaining kwargs (see `MiniHack`)
+        **other,
+    ):
+        super().__init__(
+            *args,
+            des_file=des_file,
+            autopickup=autopickup,
+            allow_all_yn_questions=allow_all_yn_questions,
+            allow_all_modes=allow_all_modes,
+            character=character,
+            max_episode_steps=max_episode_steps,
+            observation_keys=observation_keys,
+            **other,
         )
-        super().__init__(*args, des_file=des_file, **kwargs)
 
 
 register(

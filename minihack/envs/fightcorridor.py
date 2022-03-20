@@ -4,10 +4,17 @@ from minihack.envs import register
 
 
 class MiniHackFightCorridor(MiniHackNavigation):
-    def __init__(self, *args, lit=True, **kwargs):
-        kwargs["character"] = "kni-hum-law-fem"  # tested on human knight
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 350)
-
+    def __init__(
+        self,
+        *args,
+        lit: bool = True,
+        # Play with human knight character by default
+        character: str = "kni-hum-law-fem",
+        # Default episode limit
+        max_episode_steps: int = 350,
+        # remaining kwargs (see `MiniHackNavigation`)
+        **other,
+    ):
         map = """
 -----       ----------------------
 |...|       |....................|
@@ -25,7 +32,13 @@ class MiniHackFightCorridor(MiniHackNavigation):
         lvl_gen.add_monster(name="giant rat", place=(31, 3))
         lvl_gen.add_goal_pos((32, 2))
 
-        super().__init__(*args, des_file=lvl_gen.get_des(), **kwargs)
+        super().__init__(
+            *args,
+            des_file=lvl_gen.get_des(),
+            character=character,
+            max_episode_steps=max_episode_steps,
+            **other,
+        )
 
 
 class MiniHackFightCorridorDark(MiniHackFightCorridor):

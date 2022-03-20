@@ -6,35 +6,54 @@ from minihack.envs import register
 class MiniHackWoDEasy(MiniHackSkill):
     """Environment for "Wand of death" task."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        *args,
+        autopickup: bool = True,
+        max_episode_steps: int = 50,
+        **other,
+    ):
         map = """
 |----------
 |.........+
 |----------
 """
         lvl_gen = LevelGenerator(map=map, lit=True)
-
         lvl_gen.set_start_pos((1, 1))
-        kwargs["autopickup"] = kwargs.pop("autopickup", True)
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 50)
 
         lvl_gen.add_object(
-            name="death", symbol="/", cursestate="blessed", place=((1, 1))
+            name="death",
+            symbol="/",
+            cursestate="blessed",
+            place=(1, 1),
         )
-        lvl_gen.add_monster("minotaur", args=("asleep",), place=(9, 1))
 
-        des_file = lvl_gen.get_des()
+        lvl_gen.add_monster(
+            "minotaur",
+            args=("asleep",),
+            place=(9, 1),
+        )
 
         rwrd_mngr = RewardManager()
         rwrd_mngr.add_kill_event("minotaur")
 
         super().__init__(
-            *args, des_file=des_file, reward_manager=rwrd_mngr, **kwargs
+            *args,
+            des_file=lvl_gen.get_des(),
+            autopickup=autopickup,
+            max_episode_steps=max_episode_steps,
+            reward_manager=rwrd_mngr,
+            **other,
         )
 
 
 class MiniHackWoDMedium(MiniHackSkill):
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 150,
+        **other,
+    ):
         map = """
 |---------------------------|
 |...........................|
@@ -46,17 +65,33 @@ class MiniHackWoDMedium(MiniHackSkill):
         lvl_gen.add_goal_pos((27, 1))
 
         lvl_gen.add_object(
-            name="death", symbol="/", cursestate="blessed", place=((2, 1))
+            name="death",
+            symbol="/",
+            cursestate="blessed",
+            place=(2, 1),
         )
-        lvl_gen.add_monster("minotaur", args=("asleep",), place=(26, 1))
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 150)
 
-        des_file = lvl_gen.get_des()
-        super().__init__(*args, des_file=des_file, **kwargs)
+        lvl_gen.add_monster(
+            "minotaur",
+            args=("asleep",),
+            place=(26, 1),
+        )
+
+        super().__init__(
+            *args,
+            des_file=lvl_gen.get_des(),
+            max_episode_steps=max_episode_steps,
+            **other,
+        )
 
 
 class MiniHackWoDHard(MiniHackSkill):
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 400,
+        **other,
+    ):
         map = """
 |---------------------------|
 |...........................|
@@ -70,19 +105,39 @@ class MiniHackWoDHard(MiniHackSkill):
         lvl_gen.set_start_rect((1, 1), (5, 5))
         lvl_gen.add_goal_pos((27, 1))
 
-        lvl_gen.set_area_variable("$safe_room", "fillrect", 1, 1, 5, 5)
-        lvl_gen.add_object_area(
-            "$safe_room", name="death", symbol="/", cursestate="blessed"
+        lvl_gen.set_area_variable(
+            "$safe_room",
+            "fillrect",
+            1, 1, 5, 5,
         )
-        lvl_gen.add_monster("minotaur", place=(26, 1))
-        des_file = lvl_gen.get_des()
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 400)
 
-        super().__init__(*args, des_file=des_file, **kwargs)
+        lvl_gen.add_object_area(
+            "$safe_room",
+            name="death",
+            symbol="/",
+            cursestate="blessed",
+        )
+
+        lvl_gen.add_monster(
+            "minotaur",
+            place=(26, 1),
+        )
+
+        super().__init__(
+            *args,
+            des_file=lvl_gen.get_des(),
+            max_episode_steps=max_episode_steps,
+            **other,
+        )
 
 
 class MiniHackWoDPro(MiniHackSkill):
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 1000,
+        **other,
+    ):
         map = """
 -------------------------------------
 |.................|.|...............|
@@ -107,17 +162,26 @@ class MiniHackWoDPro(MiniHackSkill):
 -------------------------------------
 """
         lvl_gen = LevelGenerator(map=map, lit=True)
+
         lvl_gen.set_start_pos((19, 1))
         lvl_gen.add_goal_pos((19, 7))
-        lvl_gen.add_monster(name="minotaur", place=(19, 9))
-        lvl_gen.add_object("death", "/", cursestate="blessed")
-        des_file = lvl_gen.get_des()
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 1000)
+
+        lvl_gen.add_monster(
+            name="minotaur",
+            place=(19, 9),
+        )
+
+        lvl_gen.add_object(
+            name="death",
+            symbol="/",
+            cursestate="blessed",
+        )
 
         super().__init__(
             *args,
-            des_file=des_file,
-            **kwargs,
+            des_file=lvl_gen.get_des(),
+            max_episode_steps=max_episode_steps,
+            **other,
         )
 
 

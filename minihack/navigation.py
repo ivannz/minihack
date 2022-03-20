@@ -25,21 +25,33 @@ class MiniHackNavigation(MiniHack):
       a reward manager.
     """
 
-    def __init__(self, *args, des_file: str = None, **kwargs):
+    def __init__(
+        self,
+        *args,
+        des_file: str = None,
         # Actions space - move only by default
-        kwargs["actions"] = kwargs.pop("actions", MOVE_ACTIONS)
+        actions: tuple[int] = MOVE_ACTIONS,
         # Disallowing one-letter menu questions
-        kwargs["allow_all_yn_questions"] = kwargs.pop(
-            "allow_all_yn_questions", False
-        )
+        allow_all_yn_questions: bool = False,
         # Perform known steps
-        kwargs["allow_all_modes"] = kwargs.pop("allow_all_modes", False)
+        allow_all_modes: bool = False,
         # Play with Rogue character by default
-        kwargs["character"] = kwargs.pop("character", "rog-hum-cha-mal")
+        character: str = "rog-hum-cha-mal",
         # Default episode limit
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 100)
-
-        super().__init__(*args, des_file=des_file, **kwargs)
+        max_episode_steps: int = 100,
+        # remaining kwargs (see `base.MiniHack`)
+        **other,
+    ):
+        super().__init__(
+            *args,
+            des_file=des_file,
+            actions=actions,
+            allow_all_yn_questions=allow_all_yn_questions,
+            allow_all_modes=allow_all_modes,
+            character=character,
+            max_episode_steps=max_episode_steps,
+            **other,
+        )
 
 
 register(

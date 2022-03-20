@@ -4,27 +4,63 @@ from minihack.envs import register
 
 
 class MiniHackHideAndSeekMapped(MiniHackNavigation):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 200)
-        super().__init__(*args, des_file="hidenseek_mapped.des", **kwargs)
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 200,
+        **other,
+    ):
+        super().__init__(
+            *args,
+            des_file="hidenseek_mapped.des",
+            max_episode_steps=max_episode_steps,
+            **other,
+        )
 
 
 class MiniHackHideAndSeek(MiniHackNavigation):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 200)
-        super().__init__(*args, des_file="hidenseek.des", **kwargs)
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 200,
+        **other,
+    ):
+        super().__init__(
+            *args,
+            des_file="hidenseek.des",
+            max_episode_steps=max_episode_steps,
+            **other,
+        )
 
 
 class MiniHackHideAndSeekLava(MiniHackNavigation):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 200)
-        super().__init__(*args, des_file="hidenseek_lava.des", **kwargs)
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 200,
+        **other,
+    ):
+        super().__init__(
+            *args,
+            des_file="hidenseek_lava.des",
+            max_episode_steps=max_episode_steps,
+            **other,
+        )
 
 
 class MiniHackHideAndSeekBig(MiniHackNavigation):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 400)
-        super().__init__(*args, des_file="hidenseek_big.des", **kwargs)
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 400,
+        **other,
+    ):
+        super().__init__(
+            *args,
+            des_file="hidenseek_big.des",
+            max_episode_steps=max_episode_steps,
+            **other,
+        )
 
 
 register(

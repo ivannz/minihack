@@ -6,8 +6,13 @@ from minihack import MiniHackNavigation, RewardManager
 class MiniHackMemento(MiniHackNavigation):
     """Environment for a memento challenge."""
 
-    def __init__(self, *args, des_file, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 5000)
+    def __init__(
+        self,
+        *args,
+        des_file,
+        max_episode_steps: int = 5000,
+        **other,
+    ):
         reward_manager = RewardManager()
         reward_manager.add_message_event(
             ["squeak"],
@@ -22,7 +27,11 @@ class MiniHackMemento(MiniHackNavigation):
             terminal_required=True,
         )
         super().__init__(
-            *args, des_file=des_file, reward_manager=reward_manager, **kwargs
+            *args,
+            des_file=des_file,
+            max_episode_steps=max_episode_steps,
+            reward_manager=reward_manager,
+            **other,
         )
 
 
