@@ -98,7 +98,7 @@ MINIHACK_SPACE_FUNCS = {
     ),
 }
 
-MH_DEFAULT_OBS_KEYS = [
+MH_DEFAULT_OBS_KEYS = (
     "glyphs",
     "chars",
     "colors",
@@ -109,7 +109,7 @@ MH_DEFAULT_OBS_KEYS = [
     "specials_crop",
     "blstats",
     "message",
-]
+)
 
 
 class MiniHack(NetHackStaircase):
@@ -128,18 +128,32 @@ class MiniHack(NetHackStaircase):
         self,
         *args,
         des_file: str,
-        reward_win=1,
-        reward_lose=0,
-        obs_crop_h=9,
-        obs_crop_w=9,
-        obs_crop_pad=0,
-        reward_manager=None,
-        use_wiki=False,
-        autopickup=True,
-        pet=False,
-        observation_keys=MH_DEFAULT_OBS_KEYS,
+        reward_win: float = 1,
+        reward_lose: float = 0,
+        obs_crop_h: int = 9,
+        obs_crop_w: int = 9,
+        obs_crop_pad: int = 0,
+        reward_manager: object = None,
+        use_wiki: bool = False,
+        autopickup: bool = True,
+        pet: bool = False,
+        observation_keys: tuple[str] = MH_DEFAULT_OBS_KEYS,
         seeds=None,
-        **kwargs,
+        # NetHack options
+        options: tuple[int] = MH_NETHACKOPTIONS,
+        # Actions space - move only
+        actions: tuple[int] = MH_FULL_ACTIONS,
+        # Enter Wizard mode - turned off by default
+        wizard: bool = False,
+        # Allowing one-letter menu questions
+        allow_all_yn_questions: bool = True,
+        # Episode limit
+        max_episode_steps: int = 200,
+        # Not saving NLE data by detauls
+        savedir: str = None,
+        # Not spawning random monsters
+        spawn_monsters: bool = False,
+        **other,
     ):
         """Constructs a new MiniHack environment.
 
@@ -213,28 +227,11 @@ class MiniHack(NetHackStaircase):
                 'MORE'. If set to False, only skip click through 'MORE'
                 on death. Inherited from `NLE`.
         """
-        # NetHack options
-        options: Tuple = MH_NETHACKOPTIONS
         if not autopickup:
             options += ("!autopickup",)
+
         if not pet:
             options += ("pettype:none",)
-        kwargs["options"] = kwargs.pop("options", options)
-        # Actions space - move only
-        kwargs["actions"] = kwargs.pop("actions", MH_FULL_ACTIONS)
-
-        # Enter Wizard mode - turned off by default
-        kwargs["wizard"] = kwargs.pop("wizard", False)
-        # Allowing one-letter menu questions
-        kwargs["allow_all_yn_questions"] = kwargs.pop(
-            "allow_all_yn_questions", True
-        )
-        # Episode limit
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 200)
-        # Not saving NLE data by detauls
-        kwargs["savedir"] = kwargs.pop("savedir", None)
-        # Not spawning random monsters
-        kwargs["spawn_monsters"] = kwargs.pop("spawn_monsters", False)
 
         # MiniHack's observation keys are kept separate
         self._minihack_obs_keys = list(observation_keys)
@@ -254,7 +251,18 @@ class MiniHack(NetHackStaircase):
 
         self._level_seeds = seeds
 
-        super().__init__(*args, **kwargs)
+        super().__init__(
+            *args,
+            **other,
+            options=options,
+            actions=actions,
+            wizard=wizard,
+            allow_all_yn_questions=allow_all_yn_questions,
+            max_episode_steps=max_episode_steps,
+            savedir=savedir,
+            spawn_monsters=spawn_monsters,
+            observation_keys=observation_keys,
+        )
 
         # Patch the nhdat library by compling the given .des file
         self.update(des_file)
@@ -365,7 +373,7 @@ class MiniHack(NetHackStaircase):
         hackdir directory of the environment.
         """
         if not des_file.endswith(".des"):
-            fpath = os.path.join(self.env._vardir, "mylevel.des")
+            fpath = os.path.join(self.nethack._vardir, "mylevel.des")
             # If the des-file is passed as a string
             with open(fpath, "w") as f:
                 f.writelines(des_file)
@@ -386,7 +394,7 @@ class MiniHack(NetHackStaircase):
             _ = subprocess.call(
                 [
                     PATCH_SCRIPT,
-                    self.env._vardir,
+                    self.nethack._vardir,
                     HACKDIR,
                     LIB_DIR,
                     des_path,

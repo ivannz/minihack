@@ -40,19 +40,19 @@ class VecEnv_Wrapper:
         self.env = env
 
     def step(self, action: int):
-        os.chdir(self.env.env._vardir)
+        os.chdir(self.env.nethack._vardir)
         return self.env.step(action)
 
     def reset(self):
-        os.chdir(self.env.env._vardir)
+        os.chdir(self.env.nethack._vardir)
         return self.env.reset()
 
     def close(self):
-        os.chdir(self.env.env._vardir)
+        os.chdir(self.env.nethack._vardir)
         self.env.close()
 
     def seed(self, core=None, disp=None, reseed=False):
-        os.chdir(self.env.env._vardir)
+        os.chdir(self.env.nethack._vardir)
         self.env.seed(core, disp, reseed)
 
     def __getattr__(self, name):
