@@ -9,8 +9,15 @@ DUNGEON_SHAPE = (76, 21)
 class MiniHackMazeWalk(MiniHackNavigation):
     """Environment for "mazewalk" task."""
 
-    def __init__(self, *args, w, h, premapped, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 1000)
+    def __init__(
+        self,
+        *args,
+        w: int,
+        h: int,
+        premapped: bool,
+        max_episode_steps: int = 1000,
+        **other
+    ):
         if premapped:
             flags = ("hardfloor", "premapped")
         else:
@@ -22,25 +29,43 @@ class MiniHackMazeWalk(MiniHackNavigation):
             lvl_gen = LevelGenerator(w=w, h=h, flags=flags)
             lvl_gen.fill_terrain("rect", "-", 0, 0, w - 1, h - 1)
             lvl_gen.fill_terrain("fillrect", " ", 1, 1, w - 2, h - 2)
+
         else:
             lvl_gen = LevelGenerator(w=w, h=h, fill=" ", flags=flags)
 
         lvl_gen.add_mazewalk()
         lvl_gen.add_stair_down()
 
-        super().__init__(*args, des_file=lvl_gen.get_des(), **kwargs)
+        super().__init__(
+            *args,
+            des_file=lvl_gen.get_des(),
+            max_episode_steps=max_episode_steps,
+            **other
+        )
 
 
 class MiniHackMazeWalk9x9(MiniHackMazeWalk):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 200)
-        super().__init__(*args, w=9, h=9, premapped=False, **kwargs)
+    def __init__(self, *args, max_episode_steps: int = 200, **other):
+        super().__init__(
+            *args,
+            w=9,
+            h=9,
+            premapped=False,
+            max_episode_steps=max_episode_steps,
+            **other
+        )
 
 
 class MiniHackMazeWalk9x9Premapped(MiniHackMazeWalk):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 200)
-        super().__init__(*args, w=9, h=9, premapped=True, **kwargs)
+    def __init__(self, *args, max_episode_steps: int = 200, **other):
+        super().__init__(
+            *args,
+            w=9,
+            h=9,
+            premapped=True,
+            max_episode_steps=max_episode_steps,
+            **other
+        )
 
 
 class MiniHackMazeWalk15x15(MiniHackMazeWalk):

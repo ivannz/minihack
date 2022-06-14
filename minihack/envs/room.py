@@ -10,16 +10,16 @@ class MiniHackRoom(MiniHackNavigation):
     def __init__(
         self,
         *args,
-        size=5,
-        random=True,
-        n_monster=0,
-        n_trap=0,
-        lit=True,
-        **kwargs
+        size: int = 5,
+        random: bool = True,
+        n_monster: int = 0,
+        n_trap: int = 0,
+        lit: bool = True,
+        max_episode_steps: int = None,
+        **other
     ):
-        kwargs["max_episode_steps"] = kwargs.pop(
-            "max_episode_steps", size * 20
-        )
+        if max_episode_steps is None:
+            max_episode_steps = size * 20
 
         lvl_gen = LevelGenerator(w=size, h=size, lit=lit)
         if random:
@@ -34,7 +34,12 @@ class MiniHackRoom(MiniHackNavigation):
         for _ in range(n_trap):
             lvl_gen.add_trap()
 
-        super().__init__(*args, des_file=lvl_gen.get_des(), **kwargs)
+        super().__init__(
+            *args,
+            des_file=lvl_gen.get_des(),
+            max_episode_steps=max_episode_steps,
+            **other,
+        )
 
 
 class MiniHackRoom5x5(MiniHackRoom):

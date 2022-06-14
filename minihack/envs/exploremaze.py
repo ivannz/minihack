@@ -19,11 +19,16 @@ def stairs_reward_function(env, previous_observation, action, observation):
 class MiniHackExploreMaze(MiniHackNavigation):
     """Environment for a memory challenge."""
 
-    def __init__(self, *args, des_file, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 500)
-        kwargs["actions"] = kwargs.pop("actions", ACTIONS)
-        kwargs["autopickup"] = False
-        kwargs["allow_all_yn_questions"] = True
+    def __init__(
+        self,
+        *args,
+        des_file,
+        max_episode_steps: int = 500,
+        actions: tuple[int] = ACTIONS,
+        autopickup: bool = False,
+        allow_all_yn_questions: bool = True,
+        **other
+    ):
         reward_manager = RewardManager()
         reward_manager.add_eat_event(
             "apple",
@@ -43,7 +48,11 @@ class MiniHackExploreMaze(MiniHackNavigation):
             *args,
             des_file=des_file,
             reward_manager=reward_manager,
-            **kwargs,
+            max_episode_steps=max_episode_steps,
+            actions=actions,
+            autopickup=autopickup,
+            allow_all_yn_questions=allow_all_yn_questions,
+            **other,
         )
 
 

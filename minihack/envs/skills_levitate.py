@@ -86,8 +86,7 @@ class MiniHackLevitatePotionFixed(MiniHackLevitate):
 
 
 class MiniHackLevitateRandom(MiniHackLevitate):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 400)
+    def __init__(self, *args, max_episode_steps: int = 400, **other):
         des_file = """
 MAZE: "mylevel", ' '
 FLAGS:hardfloor
@@ -111,7 +110,12 @@ IF [33%] {
     }
 }
 """
-        super().__init__(*args, des_file=des_file, **kwargs)
+        super().__init__(
+            *args,
+            des_file=des_file,
+            max_episode_steps=max_episode_steps,
+            **other
+        )
 
 
 register(

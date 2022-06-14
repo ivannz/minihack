@@ -4,13 +4,16 @@ from minihack.envs import register
 
 
 class MiniHackRiver(MiniHackNavigation):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 350)
-        n_monster = kwargs.pop("n_monster", 0)
-        n_boulder = kwargs.pop("n_boulder", 5)
-        narrow = kwargs.pop("narrow", False)
-        lava = kwargs.pop("lava", False)
-
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 350,
+        n_monster: int = 0,
+        n_boulder: int = 5,
+        narrow: bool = False,
+        lava: bool = False,
+        **other
+    ):
         if narrow:
             map = """
 ..................WW.....
@@ -58,7 +61,12 @@ class MiniHackRiver(MiniHackNavigation):
 
         lvl_gen.add_goal_pos((24, 2))
 
-        super().__init__(*args, des_file=lvl_gen.get_des(), **kwargs)
+        super().__init__(
+            *args,
+            des_file=lvl_gen.get_des(),
+            max_episode_steps=max_episode_steps,
+            **other
+        )
 
 
 class MiniHackRiverMonster(MiniHackRiver):

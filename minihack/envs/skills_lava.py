@@ -4,8 +4,7 @@ from minihack.envs import register
 
 
 class MiniHackLCLevitatePotionPickup(MiniHackSkill):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 400)
+    def __init__(self, *args, max_episode_steps: int = 400, **other):
         des_file = """
 MAZE: "mylevel", ' '
 FLAGS:hardfloor
@@ -27,13 +26,22 @@ OBJECT:('!',"levitation"),rndcoord($left_bank),blessed
 BRANCH:(1,1,5,5),(0,0,0,0)
 STAIR:rndcoord($right_bank),down
 """
-        super().__init__(*args, des_file=des_file, **kwargs)
+        super().__init__(
+            *args,
+            des_file=des_file,
+            max_episode_steps=max_episode_steps,
+            **other
+        )
 
 
 class MiniHackLCLevitatePotionInv(MiniHackSkill):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 400)
-        kwargs["autopickup"] = kwargs.pop("autopickup", True)
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 400,
+        autopickup: bool = True,
+        **other
+    ):
         des_file = """
 MAZE: "mylevel", ' '
 FLAGS:hardfloor
@@ -54,12 +62,17 @@ OBJECT:('!',"levitation"),(2,2),blessed
 BRANCH:(2,2,2,2),(0,0,0,0)
 STAIR:rndcoord($right_bank),down
 """
-        super().__init__(*args, des_file=des_file, **kwargs)
+        super().__init__(
+            *args,
+            des_file=des_file,
+            max_episode_steps=max_episode_steps,
+            autopickup=autopickup,
+            **other
+        )
 
 
 class MiniHackLCLevitateRingPickup(MiniHackSkill):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 400)
+    def __init__(self, *args, max_episode_steps: int = 400, **other):
         des_file = """
 MAZE: "mylevel", ' '
 FLAGS:hardfloor
@@ -81,13 +94,22 @@ OBJECT:('=',"levitation"),rndcoord($left_bank),blessed
 BRANCH:(1,1,5,5),(0,0,0,0)
 STAIR:rndcoord($right_bank),down
 """
-        super().__init__(*args, des_file=des_file, **kwargs)
+        super().__init__(
+            *args,
+            des_file=des_file,
+            max_episode_steps=max_episode_steps,
+            **other
+        )
 
 
 class MiniHackLCLevitateRingInv(MiniHackSkill):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 400)
-        kwargs["autopickup"] = kwargs.pop("autopickup", True)
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 400,
+        autopickup: bool = True,
+        **other
+    ):
         des_file = """
 MAZE: "mylevel", ' '
 FLAGS:hardfloor
@@ -108,12 +130,17 @@ OBJECT:('=',"levitation"),(2,2),blessed
 BRANCH:(2,2,2,2),(0,0,0,0)
 STAIR:rndcoord($right_bank),down
 """
-        super().__init__(*args, des_file=des_file, **kwargs)
+        super().__init__(
+            *args,
+            des_file=des_file,
+            max_episode_steps=max_episode_steps,
+            autopickup=autopickup,
+            **other
+        )
 
 
 class MiniHackLCLevitate(MiniHackSkill):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 400)
+    def __init__(self, *args, max_episode_steps: int = 400, **other):
         des_file = """
 MAZE: "mylevel", ' '
 FLAGS:hardfloor
@@ -143,7 +170,12 @@ IF [33%] {
 BRANCH:(1,1,5,5),(0,0,0,0)
 STAIR:rndcoord($right_bank),down
 """
-        super().__init__(*args, des_file=des_file, **kwargs)
+        super().__init__(
+            *args,
+            des_file=des_file,
+            max_episode_steps=max_episode_steps,
+            **other
+        )
 
 
 class MiniHackLC(MiniHackSkill):

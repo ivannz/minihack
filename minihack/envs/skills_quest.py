@@ -4,24 +4,49 @@ from minihack.envs import register
 
 
 class MiniHackQuestEasy(MiniHackSkill):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 500)
-        kwargs["autopickup"] = kwargs.pop("autopickup", True)
-        super().__init__(*args, des_file="quest_easy.des", **kwargs)
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 500,
+        autopickup: bool = True,
+        **other,
+    ):
+        super().__init__(
+            *args,
+            des_file="quest_easy.des",
+            max_episode_steps=max_episode_steps,
+            autopickup=autopickup,
+            **other,
+        )
 
 
 class MiniHackQuestMedium(MiniHackSkill):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 1000)
-        kwargs["character"] = "kni-hum-law-fem"  # tested on human knight
-        kwargs["autopickup"] = kwargs.pop("autopickup", True)
-        super().__init__(*args, des_file="quest_medium.des", **kwargs)
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 1000,
+        autopickup: bool = True,
+        character: str = "kni-hum-law-fem",  # tested on human knight
+        **other,
+    ):
+        super().__init__(
+            *args,
+            des_file="quest_medium.des",
+            max_episode_steps=max_episode_steps,
+            autopickup=autopickup,
+            character=character,
+            **other,
+        )
 
 
 class MiniHackQuestHard(MiniHackSkill):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 1000)
-        super().__init__(*args, des_file="quest_hard.des", **kwargs)
+    def __init__(self, *args, max_episode_steps: int = 1000, **other):
+        super().__init__(
+            *args,
+            des_file="quest_hard.des",
+            max_episode_steps=max_episode_steps,
+            **other,
+        )
 
 
 register(

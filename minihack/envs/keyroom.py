@@ -30,12 +30,25 @@ class KeyRoomGenerator:
 class MiniHackKeyDoor(MiniHackNavigation):
     """Environment for "key and door" task."""
 
-    def __init__(self, *args, des_file, **kwargs):
-        kwargs["character"] = kwargs.pop("charachter", "rog-hum-cha-mal")
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 200)
-        kwargs["actions"] = kwargs.pop("actions", APPLY_ACTIONS)
-        kwargs["autopickup"] = kwargs.pop("autopickup", False)
-        super().__init__(*args, des_file=des_file, **kwargs)
+    def __init__(
+        self,
+        *args,
+        des_file,
+        charachter: str = "rog-hum-cha-mal",
+        max_episode_steps: int = 200,
+        actions: tuple[int] = APPLY_ACTIONS,
+        autopickup: bool = False,
+        **other
+    ):
+        super().__init__(
+            *args,
+            des_file=des_file,
+            charachter=charachter,
+            max_episode_steps=max_episode_steps,
+            actions=actions,
+            autopickup=autopickup,
+            **other
+        )
 
     def step(self, action: int):
         # If apply action is chosen
@@ -71,10 +84,10 @@ class MiniHackKeyDoor(MiniHackNavigation):
 
 
 class MiniHackKeyRoom(MiniHackKeyDoor):
-    def __init__(self, *args, room_size, subroom_size, lit, **kwargs):
+    def __init__(self, *args, room_size, subroom_size, lit, **other):
         lev_gen = KeyRoomGenerator(room_size, subroom_size, lit)
         des_file = lev_gen.get_des()
-        super().__init__(*args, des_file=des_file, **kwargs)
+        super().__init__(*args, des_file=des_file, **other)
 
 
 class MiniHackKeyRoom5x5Fixed(MiniHackKeyDoor):
@@ -97,18 +110,26 @@ class MiniHackKeyRoom5x5Dark(MiniHackKeyRoom):
 
 
 class MiniHackKeyRoom15x15(MiniHackKeyRoom):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 400)
+    def __init__(self, *args, max_episode_steps: int = 400, **other):
         super().__init__(
-            *args, room_size=15, subroom_size=5, lit=True, **kwargs
+            *args,
+            room_size=15,
+            subroom_size=5,
+            lit=True,
+            max_episode_steps=max_episode_steps,
+            **other
         )
 
 
 class MiniHackKeyRoom15x15Dark(MiniHackKeyRoom):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 400)
+    def __init__(self, *args, max_episode_steps: int = 400, **other):
         super().__init__(
-            *args, room_size=15, subroom_size=5, lit=False, **kwargs
+            *args,
+            room_size=15,
+            subroom_size=5,
+            lit=False,
+            max_episode_steps=max_episode_steps,
+            **other
         )
 
 

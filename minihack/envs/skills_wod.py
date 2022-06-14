@@ -108,7 +108,10 @@ class MiniHackWoDHard(MiniHackSkill):
         lvl_gen.set_area_variable(
             "$safe_room",
             "fillrect",
-            1, 1, 5, 5,
+            1,
+            1,
+            5,
+            5,
         )
 
         lvl_gen.add_object_area(
@@ -138,7 +141,8 @@ class MiniHackWoDPro(MiniHackSkill):
         max_episode_steps: int = 1000,
         **other,
     ):
-        map = """
+        lvl_gen = LevelGenerator(
+            map="""
 -------------------------------------
 |.................|.|...............|
 |.|-------------|.|.|.------------|.|
@@ -160,8 +164,9 @@ class MiniHackWoDPro(MiniHackSkill):
 |.|-------------------------------|.|
 |...................................|
 -------------------------------------
-"""
-        lvl_gen = LevelGenerator(map=map, lit=True)
+""",
+            lit=True,
+        )
 
         lvl_gen.set_start_pos((19, 1))
         lvl_gen.add_goal_pos((19, 7))

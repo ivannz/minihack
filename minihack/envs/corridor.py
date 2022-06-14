@@ -18,10 +18,21 @@ class MiniHackCorridor(MiniHackNavigation):
     connect several rooms and find the goal.
     """
 
-    def __init__(self, *args, des_file, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 1000)
-        kwargs["actions"] = kwargs.pop("actions", NAVIGATE_ACTIONS)
-        super().__init__(*args, des_file=des_file, **kwargs)
+    def __init__(
+        self,
+        *args,
+        des_file,
+        max_episode_steps: int = 1000,
+        actions: tuple[int] = NAVIGATE_ACTIONS,
+        **other
+    ):
+        super().__init__(
+            *args,
+            des_file=des_file,
+            max_episode_steps=max_episode_steps,
+            actions=actions,
+            **other
+        )
 
 
 class MiniHackCorridor2(MiniHackCorridor):

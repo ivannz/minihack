@@ -34,30 +34,38 @@ def load_boxoban_levels(cur_levels_path):
 
 
 class BoxoHack(MiniHackNavigation):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 400)
-        kwargs["actions"] = kwargs.pop("actions", MOVE_ACTIONS)
-        level_set = kwargs.pop("level_set", "unfiltered")
-        level_mode = kwargs.pop("level_mode", "train")
-
+    def __init__(
+        self,
+        *args,
+        level_set: str = "unfiltered",
+        level_mode: str = "train",
+        penalty_time: float = 0,
+        flags: tuple[str] = (),
+        reward_shaping_coefficient: float = 0.0,
+        max_episode_steps: int = 400,
+        actions: tuple[int] = MOVE_ACTIONS,
+        **other
+    ):
         cur_levels_path = os.path.join(LEVELS_PATH, level_set, level_mode)
 
-        self._time_penalty = kwargs.pop("penalty_time", 0)
-        self._flags = tuple(kwargs.pop("flags", []))
+        self._time_penalty = penalty_time
+        self._flags = tuple(flags)
         try:
             self._levels = load_boxoban_levels(cur_levels_path)
         except FileNotFoundError:
             raise ModuleNotFoundError(
                 "To use Boxoban environments, please download maps using "
                 "the minihack/scripts/download_boxoban_levels.py script."
-            )
+            ) from None
 
-        self._reward_shaping_coefficient = kwargs.pop(
-            "reward_shaping_coefficient", 0
-        )
+        self._reward_shaping_coefficient = reward_shaping_coefficient
 
         super().__init__(
-            *args, des_file=self.get_lvl_gen().get_des(), **kwargs
+            *args,
+            des_file=self.get_lvl_gen().get_des(),
+            max_episode_steps=max_episode_steps,
+            actions=actions,
+            **other
         )
 
     def get_env_map(self, level):
@@ -135,30 +143,63 @@ class BoxoHack(MiniHackNavigation):
 
 
 class MiniHackBoxobanUnfiltered(BoxoHack):
-    def __init__(self, *args, **kwargs):
-        kwargs["level_set"] = "unfiltered"
-        kwargs["level_mode"] = "train"
-        kwargs["reward_shaping_coefficient"] = 0.1
-        kwargs["penalty_time"] = -0.001
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        *args,
+        level_set: str = "unfiltered",
+        level_mode: str = "train",
+        reward_shaping_coefficient: float = 0.1,
+        penalty_time: float = -0.001,
+        **other
+    ):
+        super().__init__(
+            *args,
+            level_set=level_set,
+            level_mode=level_mode,
+            reward_shaping_coefficient=reward_shaping_coefficient,
+            penalty_time=penalty_time,
+            **other
+        )
 
 
 class MiniHackBoxobanMedium(BoxoHack):
-    def __init__(self, *args, **kwargs):
-        kwargs["level_set"] = "medium"
-        kwargs["level_mode"] = "train"
-        kwargs["reward_shaping_coefficient"] = 0.1
-        kwargs["penalty_time"] = -0.001
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        *args,
+        level_set: str = "medium",
+        level_mode: str = "train",
+        reward_shaping_coefficient: float = 0.1,
+        penalty_time: float = -0.001,
+        **other
+    ):
+        super().__init__(
+            *args,
+            level_set=level_set,
+            level_mode=level_mode,
+            reward_shaping_coefficient=reward_shaping_coefficient,
+            penalty_time=penalty_time,
+            **other
+        )
 
 
 class MiniHackBoxobanHard(BoxoHack):
-    def __init__(self, *args, **kwargs):
-        kwargs["level_set"] = "hard"
-        kwargs["level_mode"] = ""
-        kwargs["reward_shaping_coefficient"] = 0.1
-        kwargs["penalty_time"] = -0.001
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        *args,
+        level_set: str = "hard",
+        level_mode: str = "",
+        reward_shaping_coefficient: float = 0.1,
+        penalty_time: float = -0.001,
+        **other
+    ):
+        super().__init__(
+            *args,
+            level_set=level_set,
+            level_mode=level_mode,
+            reward_shaping_coefficient=reward_shaping_coefficient,
+            penalty_time=penalty_time,
+            **other
+        )
 
 
 register(

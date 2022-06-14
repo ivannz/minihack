@@ -3,15 +3,26 @@ from minihack import MiniHackNavigation, LevelGenerator
 from nle.nethack import Command, CompassDirection
 from minihack.envs import register
 import gym
+from nle import nethack
 
 
-MOVE_AND_KICK_ACTIONS = tuple(
-    list(CompassDirection) + [Command.OPEN, Command.KICK]
+MOVE_ACTIONS = tuple(nethack.CompassDirection)
+MOVE_AND_KICK_ACTIONS = MOVE_ACTIONS + tuple(
+    [nethack.Command.OPEN, nethack.Command.KICK]
 )
 
 
 class MiniGridHack(MiniHackNavigation):
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        *args,
+        env_name,
+        num_mon: int = 0,
+        num_trap: int = 0,
+        door_state: str = "closed",
+        lava_walls: bool = False,
+        **other
+    ):
         # Only ask users to install gym-minigrid if they actually need it
         try:
             import gym_minigrid  # noqa: F401
@@ -19,23 +30,30 @@ class MiniGridHack(MiniHackNavigation):
             raise ModuleNotFoundError(
                 "To use MiniGrid-based environments, please install"
                 " gym-minigrid: pip3 install gym-minigrid"
-            )
+            ) from None
 
-        self.minigrid_env = gym.make(kwargs.pop("env_name"))
-        self.num_mon = kwargs.pop("num_mon", 0)
-        self.num_trap = kwargs.pop("num_trap", 0)
-        self.door_state = kwargs.pop("door_state", "closed")
-        if self.door_state == "locked":
-            kwargs["actions"] = kwargs.pop("actions", MOVE_AND_KICK_ACTIONS)
+        self.minigrid_env = gym.make(env_name)
+        self.num_mon = num_mon
+        self.num_trap = num_trap
+        self.door_state = (
+            door_state  # "nodoor", "locked", "closed", "open", "random"
+        )
 
-        lava_walls = kwargs.pop("lava_walls", False)
+        # if actions are not specified, use the default set depending on the door
+        if "actions" not in other:
+            if self.door_state == "locked":
+                other["actions"] = MOVE_AND_KICK_ACTIONS
+
+            else:
+                other["actions"] = MOVE_ACTIONS  # from MiniHackNavigation
+
         if lava_walls:
             self.wall = "L"
         else:
             self.wall = "|"
 
         des_file = self.get_env_desc()
-        super().__init__(*args, des_file=des_file, **kwargs)
+        super().__init__(*args, des_file=des_file, **other)
 
     def get_env_map(self, env):
         door_pos = []
@@ -134,25 +152,33 @@ class MiniGridHack(MiniHackNavigation):
 
 
 class MiniHackMultiRoomN2(MiniGridHack):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 40)
+    def __init__(self, *args, max_episode_steps: int = 40, **other):
         super().__init__(
-            *args, env_name="MiniGrid-MultiRoom-N2-S4-v0", **kwargs
+            *args,
+            env_name="MiniGrid-MultiRoom-N2-S4-v0",
+            max_episode_steps=max_episode_steps,
+            **other
         )
 
 
 class MiniHackMultiRoomN4(MiniGridHack):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 120)
+    def __init__(self, *args, max_episode_steps: int = 120, **other):
         super().__init__(
-            *args, env_name="MiniGrid-MultiRoom-N4-S5-v0", **kwargs
+            *args,
+            env_name="MiniGrid-MultiRoom-N4-S5-v0",
+            max_episode_steps=max_episode_steps,
+            **other
         )
 
 
 class MiniHackMultiRoomN6(MiniGridHack):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 240)
-        super().__init__(*args, env_name="MiniGrid-MultiRoom-N6-v0", **kwargs)
+    def __init__(self, *args, max_episode_steps: int = 240, **other):
+        super().__init__(
+            *args,
+            env_name="MiniGrid-MultiRoom-N6-v0",
+            max_episode_steps=max_episode_steps,
+            **other
+        )
 
 
 register(
@@ -171,28 +197,54 @@ register(
 
 # MiniGrid: LockedMultiRoom
 class MiniHackMultiRoomN2Locked(MiniGridHack):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 40)
-        kwargs["door_state"] = "locked"
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 40,
+        door_state: str = "locked",
+        **other
+    ):
         super().__init__(
-            *args, env_name="MiniGrid-MultiRoom-N2-S4-v0", **kwargs
+            *args,
+            env_name="MiniGrid-MultiRoom-N2-S4-v0",
+            max_episode_steps=max_episode_steps,
+            door_state=door_state,
+            **other
         )
 
 
 class MiniHackMultiRoomN4Locked(MiniGridHack):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 120)
-        kwargs["door_state"] = "locked"
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 120,
+        door_state: str = "locked",
+        **other
+    ):
         super().__init__(
-            *args, env_name="MiniGrid-MultiRoom-N4-S5-v0", **kwargs
+            *args,
+            env_name="MiniGrid-MultiRoom-N4-S5-v0",
+            max_episode_steps=max_episode_steps,
+            door_state=door_state,
+            **other
         )
 
 
 class MiniHackMultiRoomN6Locked(MiniGridHack):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 240)
-        kwargs["door_state"] = "locked"
-        super().__init__(*args, env_name="MiniGrid-MultiRoom-N6-v0", **kwargs)
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 240,
+        door_state: str = "locked",
+        **other
+    ):
+        super().__init__(
+            *args,
+            env_name="MiniGrid-MultiRoom-N6-v0",
+            max_episode_steps=max_episode_steps,
+            door_state=door_state,
+            **other
+        )
 
 
 register(
@@ -211,28 +263,54 @@ register(
 
 # MiniGrid: LavaMultiRoom
 class MiniHackMultiRoomN2Lava(MiniGridHack):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 40)
-        kwargs["lava_walls"] = True
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 40,
+        lava_walls: bool = True,
+        **other
+    ):
         super().__init__(
-            *args, env_name="MiniGrid-MultiRoom-N2-S4-v0", **kwargs
+            *args,
+            env_name="MiniGrid-MultiRoom-N2-S4-v0",
+            max_episode_steps=max_episode_steps,
+            lava_walls=lava_walls,
+            **other
         )
 
 
 class MiniHackMultiRoomN4Lava(MiniGridHack):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 120)
-        kwargs["lava_walls"] = True
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 120,
+        lava_walls: bool = True,
+        **other
+    ):
         super().__init__(
-            *args, env_name="MiniGrid-MultiRoom-N4-S5-v0", **kwargs
+            *args,
+            env_name="MiniGrid-MultiRoom-N4-S5-v0",
+            max_episode_steps=max_episode_steps,
+            lava_walls=lava_walls,
+            **other
         )
 
 
 class MiniHackMultiRoomN6Lava(MiniGridHack):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 240)
-        kwargs["lava_walls"] = True
-        super().__init__(*args, env_name="MiniGrid-MultiRoom-N6-v0", **kwargs)
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 240,
+        lava_walls: bool = True,
+        **other
+    ):
+        super().__init__(
+            *args,
+            env_name="MiniGrid-MultiRoom-N6-v0",
+            max_episode_steps=max_episode_steps,
+            lava_walls=lava_walls,
+            **other
+        )
 
 
 register(
@@ -251,28 +329,42 @@ register(
 
 # MiniGrid: MonsterpedMultiRoom
 class MiniHackMultiRoomN2Monster(MiniGridHack):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 40)
-        kwargs["num_mon"] = 3
+    def __init__(
+        self, *args, max_episode_steps: int = 40, num_mon: int = 3, **other
+    ):
         super().__init__(
-            *args, env_name="MiniGrid-MultiRoom-N2-S4-v0", **kwargs
+            *args,
+            env_name="MiniGrid-MultiRoom-N2-S4-v0",
+            max_episode_steps=max_episode_steps,
+            num_mon=num_mon,
+            **other
         )
 
 
 class MiniHackMultiRoomN4Monster(MiniGridHack):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 120)
-        kwargs["num_mon"] = 6
+    def __init__(
+        self, *args, max_episode_steps: int = 120, num_mon: int = 6, **other
+    ):
         super().__init__(
-            *args, env_name="MiniGrid-MultiRoom-N4-S5-v0", **kwargs
+            *args,
+            env_name="MiniGrid-MultiRoom-N4-S5-v0",
+            max_episode_steps=max_episode_steps,
+            num_mon=num_mon,
+            **other
         )
 
 
 class MiniHackMultiRoomN6Monster(MiniGridHack):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 240)
-        kwargs["num_mon"] = 9
-        super().__init__(*args, env_name="MiniGrid-MultiRoom-N6-v0", **kwargs)
+    def __init__(
+        self, *args, max_episode_steps: int = 240, num_mon: int = 9, **other
+    ):
+        super().__init__(
+            *args,
+            env_name="MiniGrid-MultiRoom-N6-v0",
+            max_episode_steps=max_episode_steps,
+            num_mon=num_mon,
+            **other
+        )
 
 
 # MiniGrid: MonsterMultiRoom
@@ -292,34 +384,66 @@ register(
 
 # MiniGrid: ExtremeMultiRoom
 class MiniHackMultiRoomN2Extreme(MiniGridHack):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 40)
-        kwargs["num_mon"] = 3
-        kwargs["lava_walls"] = True
-        kwargs["door_state"] = "locked"
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 40,
+        num_mon: int = 3,
+        lava_walls: bool = True,
+        door_state: str = "locked",
+        **other
+    ):
         super().__init__(
-            *args, env_name="MiniGrid-MultiRoom-N2-S4-v0", **kwargs
+            *args,
+            env_name="MiniGrid-MultiRoom-N2-S4-v0",
+            max_episode_steps=max_episode_steps,
+            num_mon=num_mon,
+            lava_walls=lava_walls,
+            door_state=door_state,
+            **other
         )
 
 
 class MiniHackMultiRoomN4Extreme(MiniGridHack):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 120)
-        kwargs["num_mon"] = 6
-        kwargs["lava_walls"] = True
-        kwargs["door_state"] = "locked"
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 120,
+        num_mon: int = 6,
+        lava_walls: bool = True,
+        door_state: str = "locked",
+        **other
+    ):
         super().__init__(
-            *args, env_name="MiniGrid-MultiRoom-N4-S5-v0", **kwargs
+            *args,
+            env_name="MiniGrid-MultiRoom-N4-S5-v0",
+            max_episode_steps=max_episode_steps,
+            num_mon=num_mon,
+            lava_walls=lava_walls,
+            door_state=door_state,
+            **other
         )
 
 
 class MiniHackMultiRoomN6Extreme(MiniGridHack):
-    def __init__(self, *args, **kwargs):
-        kwargs["max_episode_steps"] = kwargs.pop("max_episode_steps", 240)
-        kwargs["num_mon"] = 9
-        kwargs["lava_walls"] = True
-        kwargs["door_state"] = "locked"
-        super().__init__(*args, env_name="MiniGrid-MultiRoom-N6-v0", **kwargs)
+    def __init__(
+        self,
+        *args,
+        max_episode_steps: int = 240,
+        num_mon: int = 9,
+        lava_walls: bool = True,
+        door_state: str = "locked",
+        **other
+    ):
+        super().__init__(
+            *args,
+            env_name="MiniGrid-MultiRoom-N6-v0",
+            max_episode_steps=max_episode_steps,
+            num_mon=num_mon,
+            lava_walls=lava_walls,
+            door_state=door_state,
+            **other
+        )
 
 
 register(
